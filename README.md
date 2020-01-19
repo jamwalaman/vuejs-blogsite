@@ -1,5 +1,7 @@
 # vuejs-blogsite
 
+Uses a [rest api](https://github.com/jamwalaman/nodejs-blog-restapi) at the backend.
+
 ## Project setup
 ```
 npm install
