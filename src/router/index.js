@@ -1,51 +1,40 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-// Blogs
-import AllBlogs from '../views/AllBlogs.vue'
-import BlogRead from '../views/BlogRead.vue'
-import BlogCreate from '../views/BlogCreate.vue'
-import BlogUpdate from '../views/BlogUpdate.vue'
-// Users
-import UserLogin from '../views/UserLogin.vue'
-import UserRegister from '../views/UserRegister.vue'
-import * as auth from '../services/AuthService'
-// Test
-import Empty from '../views/Empty.vue'
 
+import * as auth from '../services/AuthService'
 
 Vue.use(VueRouter)
 
 const routes = [{
     path: '/',
     name: 'home',
-    component: Home
+    component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue')
   },
   {
     path: '/blogs',
     name: 'blogs',
-    component: AllBlogs
+    component: () => import(/* webpackChunkName: "bloglist" */ '../views/AllBlogs.vue')
   },
   {
     path: '/blog/:id',
-    component: Empty, // from https://dev.to/berniwittmann/my-approach-on-vue-router-architecture-and-nested-routes-2kmo
+    component: () => import(/* webpackChunkName: "empty" */ '../views/Empty.vue'), // from https://dev.to/berniwittmann/my-approach-on-vue-router-architecture-and-nested-routes-2kmo
     // Sub routes
     children: [{
         path: '', // '/blog/:id'
         name: 'blogread',
-        component: BlogRead
+        component: () => import(/* webpackChunkName: "blogread" */ '../views/BlogRead.vue')
       },
       {
         path: 'update', // '/blog/:id/update'
         name: 'blogupdate',
-        component: BlogUpdate
+        component: () => import(/* webpackChunkName: "blogupdate" */ '../views/BlogUpdate.vue')
       }
     ]
   },
   {
     path: '/create',
     name: 'blogcreate',
-    component: BlogCreate,
+    component: () => import(/* webpackChunkName: "blogcreate" */ '../views/BlogCreate.vue'),
     beforeEnter: (to, from, next) => {
       if (auth.isLoggedIn()) {
         next();
@@ -57,7 +46,7 @@ const routes = [{
   {
     path: '/login',
     name: 'login',
-    component: UserLogin,
+    component: () => import(/* webpackChunkName: "login" */ '../views/UserLogin.vue'),
     // If a logged in user tries to go to the Login page, redirect them to home
     beforeEnter: (to, from, next) => {
       if (!auth.isLoggedIn()) {
@@ -69,7 +58,7 @@ const routes = [{
   },
   {
     path: '/register',
-    component: UserRegister,
+    component: () => import(/* webpackChunkName: "register" */ '../views/UserRegister.vue'),
     beforeEnter: (to, from, next) => {
       if (!auth.isLoggedIn()) {
         next();
