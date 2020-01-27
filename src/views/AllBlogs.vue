@@ -3,14 +3,16 @@
 
   <h1 class="display-4 mb-4 text-center">All Blogs</h1>
 
-  <!-- Show error if no blog found -->
   <b-row>
+    <!-- Show error if no blog found -->
     <b-col v-if="err" md="auto">
       <b-alert show variant="danger">
         <h5>Error displaying all blogs</h5>
         <pre>{{ err }}</pre>
       </b-alert>
     </b-col>
+    <!-- Loading blogs -->
+    <b-col v-if="loading">Loading blogs...</b-col>
   </b-row>
 
   <!-- Blog loop -->
@@ -32,26 +34,36 @@
 <script>
 import * as blogService from "../services/BlogService"
 export default {
+
   name: "blogs",
   metaInfo: {
     title: 'All Blogs'
   },
   data: function() {
     return {
+      loading: false,
       blogs: null,
-      err: false
+      err: null
     };
   },
-  beforeRouteEnter(to, from, next) {
-    blogService.getAllBlogs()
+  created: function() {
+    // fetch the data when the view is created and the data is already being observed
+    this.fetchData()
+  },
+  watch: {
+    // call again the method if the route changes
+    '$route': 'fetchData'
+  },
+  methods: {
+    fetchData: function() {
+      this.loading = true,
+      blogService.getAllBlogs()
       .then(res => {
-        next(vm => {
-          vm.blogs = res.data;
-        });
+          this.blogs = res.data;
       })
-      .catch(error => {
-        this.err = error;
-      });
+      .finally(() => this.loading = false)
+    }
   }
+
 };
 </script>

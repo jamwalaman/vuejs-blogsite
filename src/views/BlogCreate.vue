@@ -33,6 +33,9 @@
 import * as blogService from "../services/BlogService";
 export default {
   name: "blogcreate",
+  metaInfo: {
+    title: 'Create blog'
+  },
   data: function() {
     return {
       blog: {

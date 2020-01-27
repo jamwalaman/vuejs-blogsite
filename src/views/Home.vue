@@ -6,6 +6,10 @@
     <b-button variant="primary" :to="{name: 'blogs'}">All blogs</b-button>
   </b-jumbotron>
 
+  <b-row v-if="loading">
+    <b-col>Loading blogs...</b-col>
+  </b-row>
+
   <b-row v-if="blogs">
     <!-- Only show 6 blogs - most recent first -->
     <b-col md="4" v-for="blog in blogs.slice(0, 6)" :key="blog._id">
@@ -31,23 +35,36 @@
 <script>
 import * as blogService from "../services/BlogService"
 export default {
+
   name: 'home',
   metaInfo: {
     title: 'Home'
   },
   data: function() {
     return {
+      loading: false,
       blogs: null,
-      err: false
+      err: null
     };
   },
-  beforeRouteEnter(to, from, next) {
-    blogService.getAllBlogs()
+  created: function() {
+    // fetch the data when the view is created and the data is already being observed
+    this.fetchData()
+  },
+  watch: {
+    // call again the method if the route changes
+    '$route': 'fetchData'
+  },
+  methods: {
+    fetchData: function() {
+      this.loading = true,
+      blogService.getAllBlogs()
       .then(res => {
-        next(vm => {
-          vm.blogs = res.data;
-        });
-      });
+          this.blogs = res.data;
+      })
+      .finally(() => this.loading = false)
+    }
   }
+
 }
 </script>
